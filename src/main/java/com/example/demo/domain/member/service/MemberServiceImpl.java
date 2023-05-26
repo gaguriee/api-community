@@ -5,6 +5,8 @@ import com.example.demo.domain.member.MemberRepository;
 import com.example.demo.domain.member.dto.MemberResponse;
 import com.example.demo.domain.member.dto.SignUpRequest;
 import com.example.demo.domain.member.mapper.MemberMapper;
+import com.example.demo.exception.CustomException;
+import com.example.demo.exception.ErrorCode;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 
@@ -24,12 +26,12 @@ public class MemberServiceImpl implements MemberService {
 
         // 아이디 검증
         if (!isValidUsername(username)) {
-            throw new IllegalArgumentException("Invalid username. Username must start with an English letter and contain no special characters.");
+            throw new CustomException(ErrorCode.MISMATCH_INFO, "Invalid username. Username must start with an English letter and contain no special characters.");
         }
 
         // 비밀번호 검증
         if (!isValidPassword(password)) {
-            throw new IllegalArgumentException("Invalid password. Password must contain uppercase and lowercase letters, and special characters (!, @, #, $, %, ^, &, *) only.");
+            throw new CustomException(ErrorCode.MISMATCH_INFO, "Invalid password. Password must contain uppercase and lowercase letters, and special characters (!, @, #, $, %, ^, &, *) only.");
         }
 
         Member member = new Member();
@@ -55,13 +57,13 @@ public class MemberServiceImpl implements MemberService {
             Member member = verifyUser(username, password);
             memberRepository.delete(member);
         } catch (NoSuchElementException e) {
-            throw new IllegalArgumentException("Invalid username or password.");
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND, "Invalid username or password.");
         }
     }
 
     private Member verifyUser(String username, String password) {
         Member member = memberRepository.findByUsernameAndPassword(username, password)
-                .orElseThrow(() -> new NoSuchElementException("User not found."));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND, "User not found."));
 
         return member;
     }
@@ -71,7 +73,7 @@ public class MemberServiceImpl implements MemberService {
 
         // 비밀번호 검증
         if (!isValidPassword(newPassword)) {
-            throw new IllegalArgumentException("Invalid password. Password must contain uppercase and lowercase letters, and special characters (!, @, #, $, %, ^, &, *) only.");
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND, "Invalid password. Password must contain uppercase and lowercase letters, and special characters (!, @, #, $, %, ^, &, *) only.");
         }
         member.setPassword(newPassword);
         memberRepository.save(member);
