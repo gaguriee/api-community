@@ -7,6 +7,7 @@
 - IntelliJ
 - Spring Boot 3.1.0
 - JDK 17
+- JPA & MySQL
 - Gradle 7.6.1
 
 ### 개발목표
