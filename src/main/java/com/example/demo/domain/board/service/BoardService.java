@@ -1,5 +1,6 @@
 package com.example.demo.domain.board.service;
 
+import com.example.demo.domain.board.Board;
 import com.example.demo.domain.board.dto.BoardCreateRequest;
 import com.example.demo.domain.board.dto.BoardResponse;
 import org.springframework.data.domain.Page;
@@ -10,7 +11,8 @@ public interface BoardService {
 
     BoardResponse createBoard(String id, String password, BoardCreateRequest boardCreateRequest);
 
-    Page<BoardResponse> getBoards(int page, int size);
+    // TODO: Dto 매핑하기
+    Page<Board> getBoards(int page, int size);
 
     BoardResponse readBoard(Long id);
 

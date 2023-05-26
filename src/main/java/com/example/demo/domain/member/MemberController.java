@@ -22,7 +22,7 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @PostMapping("/signup")
+    @PostMapping("")
     public ResponseEntity<String> createMember(@RequestBody SignUpRequest signUpRequest) {
         try {
             memberService.createMember(signUpRequest);
@@ -42,7 +42,7 @@ public class MemberController {
         }
     }
 
-    @PutMapping("/updatePassword")
+    @PutMapping("/password")
     public ResponseEntity<String> updatePassword(@RequestHeader("username") String username, @RequestHeader("password") String password, @RequestBody UpdatePasswordRequest request) {
         try {
             memberService.updatePassword(username, password, request.getNewpassword());

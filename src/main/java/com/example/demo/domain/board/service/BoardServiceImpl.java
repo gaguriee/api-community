@@ -51,7 +51,7 @@ public class BoardServiceImpl implements BoardService {
         return memberRepository.findByUsernameAndPassword(id, password).get();
     }
 
-    public Page<BoardResponse> getBoards(int page, int size) {
+    public Page<Board> getBoards(int page, int size) {
         // 페이지당 게시물 갯수 범위 검증
         if (size < 5 || size > 10) {
             throw new IllegalArgumentException("Invalid size. Size must be between 5 and 10.");
@@ -69,10 +69,7 @@ public class BoardServiceImpl implements BoardService {
         Pageable pageable = PageRequest.of(page, size);
         System.out.println("pageable : " + pageable);
 
-        BoardMapper boardMapper = Mappers.getMapper(BoardMapper.class);
-        Page<BoardResponse> boardResponse = boardMapper.entitiesTPageResponse(boardRepository.findAll(pageable));
-
-        return boardResponse;
+        return boardRepository.findAll(pageable);
     }
 
     public long getTotalBoardCount() {
