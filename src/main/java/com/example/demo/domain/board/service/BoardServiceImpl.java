@@ -114,7 +114,7 @@ public class BoardServiceImpl implements BoardService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid board id: " + id));
 
         if (member.getId() != board.getAuthor().getId()) {
-            throw new RuntimeException(); // TODO : CustomException으로 변경
+            throw new RuntimeException("invalid authority"); // TODO : CustomException으로 변경
         }
 
         // 게시글 삭제 로직 구현
