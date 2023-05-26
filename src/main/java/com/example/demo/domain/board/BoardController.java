@@ -1,6 +1,7 @@
 package com.example.demo.domain.board;
 
 import com.example.demo.domain.board.dto.BoardCreateRequest;
+import com.example.demo.domain.board.dto.BoardResponse;
 import com.example.demo.domain.board.service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,7 +43,7 @@ public class BoardController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Board>> readAllBoard() {
+    public ResponseEntity<List<BoardResponse>> readAllBoard() {
         return ResponseEntity.ok(boardService.readAllBoard());
     }
 
