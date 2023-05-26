@@ -2,11 +2,13 @@ package com.example.demo.domain.member.service;
 
 import com.example.demo.domain.member.Member;
 import com.example.demo.domain.member.MemberRepository;
+import com.example.demo.domain.member.dto.MemberResponse;
 import com.example.demo.domain.member.dto.SignUpRequest;
+import com.example.demo.domain.member.mapper.MemberMapper;
+import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
 
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -16,7 +18,7 @@ public class MemberServiceImpl implements MemberService {
         this.memberRepository = memberRepository;
     }
 
-    public Member createMember(SignUpRequest signUpRequest) {
+    public MemberResponse createMember(SignUpRequest signUpRequest) {
         String username = signUpRequest.getUsername();
         String password = signUpRequest.getPassword();
 
@@ -34,7 +36,10 @@ public class MemberServiceImpl implements MemberService {
         member.setUsername(username);
         member.setPassword(password);
 
-        return memberRepository.save(member);
+        MemberMapper memberMapper = Mappers.getMapper(MemberMapper.class);
+        MemberResponse memberResponse = memberMapper.entityToResponse(member);
+
+        return memberResponse;
     }
 
     private boolean isValidUsername(String username) {
@@ -54,14 +59,11 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
-    public Member verifyUser(String username, String password) {
-        Optional<Member> optionalMember = memberRepository.findByUsernameAndPassword(username, password);
+    private Member verifyUser(String username, String password) {
+        Member member = memberRepository.findByUsernameAndPassword(username, password)
+                .orElseThrow(() -> new NoSuchElementException("User not found."));
 
-        if (optionalMember.isPresent()) {
-            return optionalMember.get();
-        } else {
-            throw new NoSuchElementException("User not found.");
-        }
+        return member;
     }
 
     public void updatePassword(String username, String password, String newPassword) {

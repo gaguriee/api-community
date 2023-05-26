@@ -3,8 +3,11 @@ package com.example.demo.domain.board.service;
 import com.example.demo.domain.board.Board;
 import com.example.demo.domain.board.BoardRepository;
 import com.example.demo.domain.board.dto.BoardCreateRequest;
+import com.example.demo.domain.board.dto.BoardResponse;
+import com.example.demo.domain.board.mapper.BoardMapper;
 import com.example.demo.domain.member.Member;
 import com.example.demo.domain.member.MemberRepository;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +28,7 @@ public class BoardServiceImpl implements BoardService {
         this.memberRepository = memberRepository;
     }
 
-    public Board createBoard(String id, String password, BoardCreateRequest boardCreateRequest) {
+    public BoardResponse createBoard(String id, String password, BoardCreateRequest boardCreateRequest) {
 
         // 사용자 verify
         Member member = verityUser(id, password);
@@ -36,16 +39,19 @@ public class BoardServiceImpl implements BoardService {
         board.setTitle(boardCreateRequest.getTitle());
         board.setContent(boardCreateRequest.getContent());
 
-        return boardRepository.save(board);
+        BoardMapper boardMapper = Mappers.getMapper(BoardMapper.class);
+        BoardResponse boardResponse = boardMapper.entityToResponse(boardRepository.save(board));
+
+        return boardResponse;
     }
 
-    public Member verityUser(String id, String password) {
+    private Member verityUser(String id, String password) {
         // 게시글 등록 로직 구현
 
         return memberRepository.findByUsernameAndPassword(id, password).get();
     }
 
-    public Page<Board> getBoards(int page, int size) {
+    public Page<BoardResponse> getBoards(int page, int size) {
         // 페이지당 게시물 갯수 범위 검증
         if (size < 5 || size > 10) {
             throw new IllegalArgumentException("Invalid size. Size must be between 5 and 10.");
@@ -62,7 +68,11 @@ public class BoardServiceImpl implements BoardService {
         System.out.println("totalCount : " + totalCount);
         Pageable pageable = PageRequest.of(page, size);
         System.out.println("pageable : " + pageable);
-        return boardRepository.findAll(pageable);
+
+        BoardMapper boardMapper = Mappers.getMapper(BoardMapper.class);
+        Page<BoardResponse> boardResponse = boardMapper.entitiesTPageResponse(boardRepository.findAll(pageable));
+
+        return boardResponse;
     }
 
     public long getTotalBoardCount() {
@@ -70,19 +80,27 @@ public class BoardServiceImpl implements BoardService {
     }
 
     // 단일 게시물 하나 읽기
-    public Board readBoard(Long id) {
-        return boardRepository.findById(id)
+    public BoardResponse readBoard(Long id) {
+        Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("no such elements with id : " + id));
+
+        BoardMapper boardMapper = Mappers.getMapper(BoardMapper.class);
+        BoardResponse boardResponse = boardMapper.entityToResponse(board);
+
+        return boardResponse;
     }
 
     // 전체 게시물 읽기
-    public List<Board> readAllBoard() {
+    public List<BoardResponse> readAllBoard() {
 
-        return boardRepository.findAll();
+        BoardMapper boardMapper = Mappers.getMapper(BoardMapper.class);
+        List<BoardResponse> boardResponse = boardMapper.entitiesToListResponse(boardRepository.findAll());
+
+        return boardResponse;
     }
 
 
-    public Board updateBoard(String username, String password, Long id, BoardCreateRequest boardCreateRequest) {
+    public BoardResponse updateBoard(String username, String password, Long id, BoardCreateRequest boardCreateRequest) {
 
         // 사용자 verify
         Member member = verityUser(username, password);
@@ -101,7 +119,10 @@ public class BoardServiceImpl implements BoardService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid board id: " + id));
         existingBoard.setTitle(boardCreateRequest.getTitle());
         existingBoard.setContent(boardCreateRequest.getContent());
-        return boardRepository.save(existingBoard);
+
+        BoardMapper boardMapper = Mappers.getMapper(BoardMapper.class);
+        BoardResponse boardResponse = boardMapper.entityToResponse(boardRepository.save(existingBoard));
+        return boardResponse;
     }
 
     public void deleteBoard(Long id, String username, String password) {

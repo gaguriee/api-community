@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+
 @Entity
 @Data
 @Table(name = "member")
@@ -29,3 +30,4 @@ public class Member {
         createdAt = LocalDateTime.now();
     }
 }
+
