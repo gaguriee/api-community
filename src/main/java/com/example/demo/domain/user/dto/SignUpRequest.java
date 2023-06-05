@@ -1,4 +1,5 @@
-package com.example.demo.domain.member.dto;
+package com.example.demo.domain.user.dto;
+
 import lombok.Data;
 
 

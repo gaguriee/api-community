@@ -1,6 +1,6 @@
 package com.example.demo.domain.board;
 
-import com.example.demo.domain.member.Member;
+import com.example.demo.domain.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -25,7 +25,7 @@ public class Board {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
-    private Member author;
+    private User author;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
