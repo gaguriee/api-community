@@ -5,8 +5,8 @@ import com.example.demo.domain.board.BoardRepository;
 import com.example.demo.domain.board.dto.BoardCreateRequest;
 import com.example.demo.domain.board.dto.BoardResponse;
 import com.example.demo.domain.board.mapper.BoardMapper;
-import com.example.demo.domain.member.Member;
-import com.example.demo.domain.member.MemberRepository;
+import com.example.demo.domain.user.UserRepository;
+import com.example.demo.domain.user.entity.User;
 import com.example.demo.exception.CustomException;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,22 +22,22 @@ import static com.example.demo.exception.ErrorCode.*;
 @Service
 public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public BoardServiceImpl(BoardRepository boardRepository, MemberRepository memberRepository) {
+    public BoardServiceImpl(BoardRepository boardRepository, UserRepository userRepository) {
         this.boardRepository = boardRepository;
-        this.memberRepository = memberRepository;
+        this.userRepository = userRepository;
     }
 
     public BoardResponse createBoard(String id, String password, BoardCreateRequest boardCreateRequest) {
 
         // 사용자 verify
-        Member member = verityUser(id, password);
+        User user = verityUser(id, password);
 
         // 게시글 등록 로직 구현
         Board board = new Board();
-        board.setAuthor(member);
+        board.setAuthor(user);
         board.setTitle(boardCreateRequest.getTitle());
         board.setContent(boardCreateRequest.getContent());
 
@@ -47,10 +47,10 @@ public class BoardServiceImpl implements BoardService {
         return boardResponse;
     }
 
-    private Member verityUser(String id, String password) {
+    private User verityUser(String id, String password) {
         // 게시글 등록 로직 구현
 
-        return memberRepository.findByUsernameAndPassword(id, password)
+        return userRepository.findByUsernameAndPassword(id, password)
                 .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND, "invalid id or password"));
     }
 
@@ -98,14 +98,14 @@ public class BoardServiceImpl implements BoardService {
     public BoardResponse updateBoard(String username, String password, Long id, BoardCreateRequest boardCreateRequest) {
 
         // 사용자 verify
-        Member member = verityUser(username, password);
+        User user = verityUser(username, password);
 
         // 게시글 verify
         Board board = boardRepository.findById(id).get();
 
         // 게시글 수정 로직 구현
 
-        if (member.getId() != board.getAuthor().getId()) {
+        if (user.getId() != board.getAuthor().getId()) {
             throw new CustomException(INVALID_AUTHORITY, "not the owner of the post");
         }
 
@@ -122,13 +122,13 @@ public class BoardServiceImpl implements BoardService {
     public void deleteBoard(Long id, String username, String password) {
 
         // 사용자 verify
-        Member member = verityUser(username, password);
+        User user = verityUser(username, password);
 
         // 게시글 verify
         Board board = boardRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ENTITY_NOT_FOUND, "no such elements with id : " + id));
 
-        if (member.getId() != board.getAuthor().getId()) {
+        if (user.getId() != board.getAuthor().getId()) {
             throw new CustomException(INVALID_AUTHORITY, "not the owner of the post");
         }
 

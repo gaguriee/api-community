@@ -1,8 +1,8 @@
-package com.example.demo.domain.member;
+package com.example.demo.domain.user;
 
-import com.example.demo.domain.member.dto.SignUpRequest;
-import com.example.demo.domain.member.dto.UpdatePasswordRequest;
-import com.example.demo.domain.member.service.MemberService;
+import com.example.demo.domain.user.dto.SignUpRequest;
+import com.example.demo.domain.user.dto.UpdatePasswordRequest;
+import com.example.demo.domain.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,30 +10,30 @@ import org.springframework.web.bind.annotation.*;
 
 // TODO : PasswordEncode 추가
 @RestController
-@RequestMapping("/members")
-public class MemberController {
-    private final MemberService memberService;
+@RequestMapping("/user")
+public class UserController {
+    private final UserService userService;
 
     @Autowired
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @PostMapping("")
     public ResponseEntity<String> createMember(@RequestBody SignUpRequest signUpRequest) {
-        memberService.createMember(signUpRequest);
-        return ResponseEntity.ok("Member created successfully.");
+        userService.createMember(signUpRequest);
+        return ResponseEntity.ok("User created successfully.");
     }
 
     @PostMapping("/withdrawn")
     public ResponseEntity<String> withdrawMember(@RequestHeader("username") String username, @RequestHeader("password") String password) {
-        memberService.withdrawMember(username, password);
-        return ResponseEntity.ok("Member withdrawn successfully.");
+        userService.withdrawMember(username, password);
+        return ResponseEntity.ok("User withdrawn successfully.");
     }
 
     @PutMapping("/password")
     public ResponseEntity<String> updatePassword(@RequestHeader("username") String username, @RequestHeader("password") String password, @RequestBody UpdatePasswordRequest request) {
-        memberService.updatePassword(username, password, request.getNewpassword());
+        userService.updatePassword(username, password, request.getNewpassword());
         return ResponseEntity.ok("Password updated successfully.");
     }
 }

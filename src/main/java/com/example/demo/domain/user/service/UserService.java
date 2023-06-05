@@ -1,9 +1,9 @@
-package com.example.demo.domain.member.service;
+package com.example.demo.domain.user.service;
 
-import com.example.demo.domain.member.dto.MemberResponse;
-import com.example.demo.domain.member.dto.SignUpRequest;
+import com.example.demo.domain.user.dto.MemberResponse;
+import com.example.demo.domain.user.dto.SignUpRequest;
 
-public interface MemberService {
+public interface UserService {
 
     MemberResponse createMember(SignUpRequest signUpRequest);
 

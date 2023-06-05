@@ -1,10 +1,10 @@
-package com.example.demo.domain.member.service;
+package com.example.demo.domain.user.service;
 
-import com.example.demo.domain.member.Member;
-import com.example.demo.domain.member.MemberRepository;
-import com.example.demo.domain.member.dto.MemberResponse;
-import com.example.demo.domain.member.dto.SignUpRequest;
-import com.example.demo.domain.member.mapper.MemberMapper;
+import com.example.demo.domain.user.UserRepository;
+import com.example.demo.domain.user.dto.MemberResponse;
+import com.example.demo.domain.user.dto.SignUpRequest;
+import com.example.demo.domain.user.entity.User;
+import com.example.demo.domain.user.mapper.UserMapper;
 import com.example.demo.exception.CustomException;
 import com.example.demo.exception.ErrorCode;
 import org.mapstruct.factory.Mappers;
@@ -13,11 +13,11 @@ import org.springframework.stereotype.Service;
 import java.util.NoSuchElementException;
 
 @Service
-public class MemberServiceImpl implements MemberService {
-    private final MemberRepository memberRepository;
+public class UserServiceImpl implements UserService {
+    private final UserRepository userRepository;
 
-    public MemberServiceImpl(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     public MemberResponse createMember(SignUpRequest signUpRequest) {
@@ -34,12 +34,12 @@ public class MemberServiceImpl implements MemberService {
             throw new CustomException(ErrorCode.MISMATCH_INFO, "Invalid password. Password must contain uppercase and lowercase letters, and special characters (!, @, #, $, %, ^, &, *) only.");
         }
 
-        Member member = new Member();
-        member.setUsername(username);
-        member.setPassword(password);
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
 
-        MemberMapper memberMapper = Mappers.getMapper(MemberMapper.class);
-        MemberResponse memberResponse = memberMapper.entityToResponse(member);
+        UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+        MemberResponse memberResponse = userMapper.entityToResponse(user);
 
         return memberResponse;
     }
@@ -54,29 +54,29 @@ public class MemberServiceImpl implements MemberService {
 
     public void withdrawMember(String username, String password) {
         try {
-            Member member = verifyUser(username, password);
-            memberRepository.delete(member);
+            User user = verifyUser(username, password);
+            userRepository.delete(user);
         } catch (NoSuchElementException e) {
             throw new CustomException(ErrorCode.MEMBER_NOT_FOUND, "Invalid username or password.");
         }
     }
 
-    private Member verifyUser(String username, String password) {
-        Member member = memberRepository.findByUsernameAndPassword(username, password)
+    private User verifyUser(String username, String password) {
+        User user = userRepository.findByUsernameAndPassword(username, password)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND, "User not found."));
 
-        return member;
+        return user;
     }
 
     public void updatePassword(String username, String password, String newPassword) {
-        Member member = verifyUser(username, password);
+        User user = verifyUser(username, password);
 
         // 비밀번호 검증
         if (!isValidPassword(newPassword)) {
             throw new CustomException(ErrorCode.MEMBER_NOT_FOUND, "Invalid password. Password must contain uppercase and lowercase letters, and special characters (!, @, #, $, %, ^, &, *) only.");
         }
-        member.setPassword(newPassword);
-        memberRepository.save(member);
+        user.setPassword(newPassword);
+        userRepository.save(user);
 
     }
 }
