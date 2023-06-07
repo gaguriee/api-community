@@ -43,11 +43,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/auth/signup", "/error", "/auth/resetPassword", "/auth/verifyIamport/certification", "/article/public").permitAll()
-                        .requestMatchers("/main", "/", "/css/**", "/images/**",
-                                "/js/**", "/h2-console/**").permitAll()
+                        .requestMatchers("/auth/login", "/auth/signup", "/error", "/auth/resetPassword").permitAll()
+                        .requestMatchers("/main").permitAll()
                         .anyRequest().authenticated()
-
                 )
 //                .cors().configurationSource(corsConfigurationSource())
                 .exceptionHandling(config -> config

@@ -49,6 +49,7 @@ public class AuthService {
     @Value("${jwt.refresh_expired-time}")
     long refreshExpired;
 
+    // TODO : 인터페이스 분리하기
 
     @Transactional(readOnly = false)
     public void signup(SignupRequest signupRequest) throws CustomException {
