@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface BoardService {
 
-    BoardResponse createBoard(String id, String password, BoardCreateRequest boardCreateRequest);
+    BoardResponse createBoard(BoardCreateRequest boardCreateRequest);
 
     // TODO: Dto 매핑하기
     Page<Board> getBoards(int page, int size);
@@ -19,7 +19,7 @@ public interface BoardService {
     List<BoardResponse> readAllBoard();
 
 
-    BoardResponse updateBoard(String username, String password, Long id, BoardCreateRequest boardCreateRequest);
+    BoardResponse updateBoard(Long id, BoardCreateRequest boardCreateRequest);
 
-    void deleteBoard(Long id, String username, String password);
+    void deleteBoard(Long id);
 }

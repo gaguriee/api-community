@@ -23,10 +23,9 @@ public class BoardController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Object> createBoard(@RequestBody BoardCreateRequest boardCreateRequest,
-                                              @RequestHeader("username") String username, @RequestHeader("password") String password) {
+    public ResponseEntity<Object> createBoard(@RequestBody BoardCreateRequest boardCreateRequest) {
 
-        boardService.createBoard(username, password, boardCreateRequest);
+        boardService.createBoard(boardCreateRequest);
         return ResponseEntity.ok("Post successfully.");
     }
 
@@ -51,16 +50,15 @@ public class BoardController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<? extends Object> updateBoard(@PathVariable Long id,
-                                                        @RequestBody BoardCreateRequest boardCreateRequest,
-                                                        @RequestHeader("username") String username, @RequestHeader("password") String password) {
-        return ResponseEntity.ok(boardService.updateBoard(username, password, id, boardCreateRequest));
+                                                        @RequestBody BoardCreateRequest boardCreateRequest) {
+        return ResponseEntity.ok(boardService.updateBoard(id, boardCreateRequest));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<? extends Object> deleteBoard(@PathVariable Long id,
                                                         @RequestHeader("username") String username, @RequestHeader("password") String password) {
 
-        boardService.deleteBoard(id, username, password);
+        boardService.deleteBoard(id);
         return ResponseEntity.ok("delete complete!");
     }
 

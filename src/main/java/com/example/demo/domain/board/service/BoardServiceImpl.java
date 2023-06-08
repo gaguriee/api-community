@@ -8,6 +8,7 @@ import com.example.demo.domain.board.mapper.BoardMapper;
 import com.example.demo.domain.user.UserRepository;
 import com.example.demo.domain.user.entity.User;
 import com.example.demo.exception.CustomException;
+import com.example.demo.util.SecurityUtils;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,10 +31,10 @@ public class BoardServiceImpl implements BoardService {
         this.userRepository = userRepository;
     }
 
-    public BoardResponse createBoard(String id, String password, BoardCreateRequest boardCreateRequest) {
+    public BoardResponse createBoard(BoardCreateRequest boardCreateRequest) {
 
         // 사용자 verify
-        User user = verityUser(id, password);
+        User user = verityUser();
 
         // 게시글 등록 로직 구현
         Board board = new Board();
@@ -45,13 +46,6 @@ public class BoardServiceImpl implements BoardService {
         BoardResponse boardResponse = boardMapper.entityToResponse(boardRepository.save(board));
 
         return boardResponse;
-    }
-
-    private User verityUser(String id, String password) {
-        // 게시글 등록 로직 구현
-
-        return userRepository.findByUsernameAndPassword(id, password)
-                .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND, "invalid id or password"));
     }
 
     public Page<Board> getBoards(int page, int size) {
@@ -95,10 +89,10 @@ public class BoardServiceImpl implements BoardService {
     }
 
 
-    public BoardResponse updateBoard(String username, String password, Long id, BoardCreateRequest boardCreateRequest) {
+    public BoardResponse updateBoard(Long id, BoardCreateRequest boardCreateRequest) {
 
         // 사용자 verify
-        User user = verityUser(username, password);
+        User user = verityUser();
 
         // 게시글 verify
         Board board = boardRepository.findById(id).get();
@@ -119,10 +113,10 @@ public class BoardServiceImpl implements BoardService {
         return boardResponse;
     }
 
-    public void deleteBoard(Long id, String username, String password) {
+    public void deleteBoard(Long id) {
 
         // 사용자 verify
-        User user = verityUser(username, password);
+        User user = verityUser();
 
         // 게시글 verify
         Board board = boardRepository.findById(id)
@@ -134,5 +128,12 @@ public class BoardServiceImpl implements BoardService {
 
         // 게시글 삭제 로직 구현
         boardRepository.deleteById(id);
+    }
+
+    private User verityUser() {
+        // 게시글 등록 로직 구현
+
+        return userRepository.findById(SecurityUtils.getCurrentUserId(userRepository).get())
+                .orElseThrow(() -> new CustomException(MEMBER_NOT_FOUND, "invalid id or password"));
     }
 }
