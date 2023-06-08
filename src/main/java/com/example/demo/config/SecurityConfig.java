@@ -6,6 +6,7 @@ import com.example.demo.domain.Auth.jwt.TokenProvider;
 import com.example.demo.domain.Auth.jwt.filter.JwtFilter;
 import com.example.demo.domain.Auth.jwt.filter.RefreshFilter;
 import com.example.demo.domain.user.UserRepository;
+import com.example.demo.exception.GlobalExceptionHandlerFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,7 +56,9 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // Session을 생성하지 않고 Stateless하게 설정
                 .addFilterBefore(new JwtFilter(tokenProvider, userRepository), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new RefreshFilter(tokenProvider, redisTemplate), JwtFilter.class); // JwtFilter 다음에 RefreshFilter를 추가
+                .addFilterBefore(new RefreshFilter(tokenProvider, redisTemplate), JwtFilter.class) // JwtFilter 다음에 RefreshFilter를 추가
+                .addFilterBefore(new GlobalExceptionHandlerFilter(), RefreshFilter.class);
+
 
         return http.build();
     }
